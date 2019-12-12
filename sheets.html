@@ -1,0 +1,62 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="googleSheets.js"></script>
+  </head>
+  <body>
+    <div align = "center">
+    <div style = "background: url(background.png);">
+    <h1>♡ワンピース一覧♡</h1>
+    <button id="left">⇦</button>
+    <button id="right">⇨</button>
+    <div id="contents"></div>
+    </div>
+    
+
+    <script>
+    /* global $ loadSheets */
+    $(function(){
+      let i = 2;
+      $("#left").on("click",showleft);
+      $("#right").on("click",showright);
+      
+      async function showleft () {
+        let data = await loadSheets('s1317201!A1:E100');
+        
+        i--;
+        if(i<1){
+          i=5;
+        }
+        $("#contents").append("<img height='100px' src='"+data.values[i][2]+"'/>");
+        $("#contents").append(data.values[i][1]+" ");
+        $("#contents").append(data.values[i][3]+" ");
+        $("#contents").append(data.values[i][4]+"円");
+        $("#contents").append("<br>");
+        
+        
+      }
+      
+      async function showright () {
+        let data = await loadSheets('s1317201!A1:E100');
+        
+        i++;
+        if(i>5){
+          i=1;
+        }
+        $("#contents").append("<img height='100px' src='"+data.values[i][2]+"'/>");
+        $("#contents").append(data.values[i][1]+" ");
+        $("#contents").append(data.values[i][3]+" ");
+        $("#contents").append(data.values[i][4]+"円");
+        $("#contents").append("<br>");
+      }
+      
+    });
+
+    </script>
+    <script async defer src="https://apis.google.com/js/api.js"
+      onload="this.onload=function(){};handleClientLoad()"
+      onreadystatechange="if (this.readyState === 'complete') this.onload()">
+    </script>
+  </body>
+</html>
