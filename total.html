@@ -1,0 +1,169 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="googleSheets.js"></script>
+  <title>最終課題</title>
+</head>
+<style>
+  .center-box {
+    text-align:center;
+  }
+  .large-text {
+    font-size: 4.0rem;
+  }
+</style>
+<body>
+<p class="center-box"><img id="mic" src="micoff.svg"></p>
+<div id="result-div" class="large-text"></div>
+<div id="contents"></div>
+<button id="left">⇦</button>
+<button id="right">⇨</button>
+
+<script>
+  $(function(){
+      let i = 2;
+      $("#left").on("click",showleft);
+      $("#right").on("click",showright);
+      
+      async function showleft () {
+        let data = await loadSheets('s1317201_2!A1:E100');
+        
+        i--;
+        if(i<1){
+          i=5;
+        }
+        //$("#contents").append("<img height='100px' src='"+data.values[i][2]+"'/>");
+        $("#contents").append(data.values[i][1]+" ");
+        $("#contents").append(data.values[i][3]+" ");
+        $("#contents").append(data.values[i][4]+"円");
+        $("#contents").append("<br>");
+      }
+      
+      async function showright () {
+        let data = await loadSheets('s1317201_2!A1:E100');
+        
+        i++;
+        if(i>5){
+          i=1;
+        }
+       // $("#contents").append("<img height='100px' src='"+data.values[i][2]+"'/>");
+        $("#contents").append(data.values[i][1]+" ");
+        $("#contents").append(data.values[i][3]+" ");
+        $("#contents").append(data.values[i][4]+"円");
+        $("#contents").append("<br>");
+      }
+      
+    });
+
+//音声認識・音声合成
+  const resultDiv = document.querySelector('#result-div');
+  const micDiv = document.querySelector('#mic');
+  let speakingtime = 0;
+  
+  // 音声認識機能(Chrome)
+  let rec = new webkitSpeechRecognition();
+  let stopped = true;
+  rec.continuous = true;
+  rec.interimResults = false;
+  rec.lang = 'ja-JP';
+
+  micDiv.onclick = function () {
+    if (stopped == true) {
+      speak("アクセスいただきありがとうございます。いかがなさいましたか");
+      stopped = false;
+      //resultDiv.innerHTML = "";
+      rec.start();
+    } else {
+      stopped = true;
+      rec.stop();
+    }
+  }
+
+  rec.onstart = function () { 
+    console.log('on start');
+    micDiv.setAttribute("src","micon.svg");
+    speakingtime = 0;
+  };
+
+  rec.onend = function () { 
+    console.log('on end');
+    micDiv.setAttribute("src","micoff.svg");
+    if (stopped == false) {
+      setTimeout(function () {
+        rec.start();
+      },speakingtime);
+    }
+  };
+
+  rec.onresult = function (e) {
+    rec.stop();
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      if (e.results[i].isFinal) {
+        console.log(e);
+        let text = e.results[i][0].transcript;
+        console.log(text);
+        speakingtime = text.length * 200;
+        console.log("estimate:", speakingtime, "ms");
+        speak(reply(text));
+        //resultDiv.innerHTML = text;
+        
+        let re1 = new RegExp(".*予約.*");
+         if(re1.test(text)){
+          let url = document.location.href;
+          document.location.href = "https://forms.gle/dYi7KQ7qZpPxzt7M8";
+         }
+        let re2 = new RegExp(".*完了.*");
+        if(re2.test(text)){
+          let url = document.location.href;
+          document.location.href = "ml5-yolo.html";
+        }
+    }
+  }
+  };
+  
+  function reply(text){
+    let re1 = new RegExp("予約");
+    let re2 = new RegExp(".*はい.*");
+   
+    
+    if(re1.test(text)){
+      return "ありがとうございます。では、次のページから予約情報を登録してください。";
+    }else if(re2.test(text)){
+      return "ありがとうございます";
+    }else{
+      return "すみません。もう一度お願いいたします。";
+    }
+  }
+
+  // 発話機能をインスタンス化
+  let msg = new SpeechSynthesisUtterance();
+  let voices = window.speechSynthesis.getVoices();
+
+  function speak(text) {
+    // 以下オプション設定（日本語は効かないもよう。。）
+    msg.voice = voices[7]; // 7:Google 日本人 ja-JP ※他は英語のみ
+    msg.volume = 1.0; // 音量 min 0 ~ max 1
+    msg.rate = 1.0; // 速度 min 0 ~ max 10
+    msg.pitch = 1.0; // 音程 min 0 ~ max 2
+    msg.text = text; // 喋る内容
+    msg.lang = 'ja-JP'; // en-US or ja-JP
+    // msg.lang = 'en-US'; // en-US or ja-JP
+
+    // 発話実行
+    speechSynthesis.speak(msg);
+  }
+  
+  // 終了時の処理
+  msg.onend = function (event) {
+    console.log('喋った時間：' + event.elapsedTime + 'ms');
+  };
+</script>
+
+<script async defer src="https://apis.google.com/js/api.js"
+      onload="this.onload=function(){};handleClientLoad()"
+      onreadystatechange="if (this.readyState === 'complete') this.onload()">
+</script>
+
+</body>
+</html>

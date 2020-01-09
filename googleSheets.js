@@ -26,7 +26,7 @@ async function loadSheets(range) {
     console.log(response.result);
     return(response.result);
   } catch (reason) {
-    console.error('error: ' + reason.result.error.message);
+    //console.error('error: ' + reason.result.error.message);
   }
 }
 
