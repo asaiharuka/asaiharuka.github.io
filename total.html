@@ -22,7 +22,7 @@
 
 <script>
   $(function(){
-      let i = 2;
+      let i = 0;
       $("#left").on("click",showleft);
       $("#right").on("click",showright);
       
@@ -31,12 +31,13 @@
         
         i--;
         if(i<1){
-          i=5;
+          i=0;
         }
         //$("#contents").append("<img height='100px' src='"+data.values[i][2]+"'/>");
         $("#contents").append(data.values[i][1]+" ");
+        $("#contents").append(data.values[i][2]+" ");
         $("#contents").append(data.values[i][3]+" ");
-        $("#contents").append(data.values[i][4]+"円");
+        $("#contents").append(data.values[i][4]+" ");
         $("#contents").append("<br>");
       }
       
@@ -44,13 +45,12 @@
         let data = await loadSheets('s1317201_2!A1:E100');
         
         i++;
-        if(i>5){
-          i=1;
-        }
+        
        // $("#contents").append("<img height='100px' src='"+data.values[i][2]+"'/>");
         $("#contents").append(data.values[i][1]+" ");
+        $("#contents").append(data.values[i][2]+" ");
         $("#contents").append(data.values[i][3]+" ");
-        $("#contents").append(data.values[i][4]+"円");
+        $("#contents").append(data.values[i][4]+" ");
         $("#contents").append("<br>");
       }
       
